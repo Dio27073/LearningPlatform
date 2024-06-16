@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Quizzes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #202020;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container{
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #303030;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .quiz-list {
+            width: 100%;
+        }
+        .quiz {
+            padding: 15px;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quiz:last-child {
+            border-bottom: none;
+        }
+        .quiz a {
+            color: #00b4d8;
+            text-decoration: none;
+        }
+        .quiz a:hover {
+            text-decoration: underline;
+        }
+        .delete-button {
+            background-color: #d9534f;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+        }
+        .delete-button:hover {
+            background-color: #c9302c;
+        }
+        .back-button {
+            background-color: #00b4d8;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #0096c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Your Quizzes</h1>
+        </div>
+        <div class="quiz-list">
+
+            {% for quiz in quizzes %}
+            <div class="quiz">
+                <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
+
+                {% if current_user.id == quiz.created_by or current_user.role.name == 'admin' %}
+                <form method="POST" action="{{ url_for('delete_quiz', quiz_id=quiz.id) }}" style="display:inline;">
+                    <button type="submit" class="delete-button">Delete</button>
+                </form>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>

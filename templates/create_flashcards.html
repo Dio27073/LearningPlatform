@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Flashcards</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background-color: #202020;
+            color: #fff;
+        }
+
+        .container{
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background-color: #303030;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group{
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button{
+            background-color: #00b4d8;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background-color: #0096c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create a New Study Set</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <h2>Add Flashcards</h2>
+            <div id="flashcards">
+                <div class="flashcard form-group">
+                    <label for="question">Term:</label>
+                    <input type="text" id="question" name="questions[]" required>
+                    <label for="answer">Definition:</label>
+                    <input type="text" id="answer" name="answers[]" required>
+                </div>
+            </div>
+            <button type="button" id="add-flashcard">Add Another Flashcard</button>
+            <button type="submit">Create Set and Flashcards</button>
+        </form>
+    </div>
+
+    <script>
+        // event listener for adding new flashcards to the set
+        document.getElementById('add-flashcard').addEventListener('click', function() {
+            var flashcardsContainer = document.getElementById('flashcards');
+            var newFlashcard = document.createElement('div');
+            newFlashcard.classList.add('flashcard', 'form-group');
+
+            newFlashcard.innerHTML = `
+                <label for="question">Term:</label>
+                <input type="text" name="questions[]" required>
+                <label for="answer">Definition:</label>
+                <input type="text" name="answers[]" required>
+            `;
+
+            flashcardsContainer.appendChild(newFlashcard);
+        });
+    </script>
+</body>
+</html>

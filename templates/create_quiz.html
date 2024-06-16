@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Quiz for {{ flashcard_set.title }}</title>
+    <style>
+        /* CSS style */
+        body{
+            font-family: Arial, sans-serif;
+            background-color: #202020;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            background-color: #303030;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group{
+            margin-bottom: 15px;
+        }
+
+        label{
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, button{
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button{
+            background-color: #00b4d8;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background-color: #0096c7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create Quiz for {{ flashcard_set.title }}</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Quiz Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="length">Length of Practice Test:</label>
+                <input type="number" id="length" name="length" min="1" max="{{ flashcards|length }}" value="4" required>
+            </div>
+            <div class="form-group">
+                <label for="question_format">Question Format:</label>
+                <select id="question_format" name="question_format" required>
+                    <option value="answer_with_term">Answer with Term</option>
+                    <option value="answer_with_definition">Answer with Definition</option>
+                </select>
+            </div>
+            <button type="submit">Create Quiz</button>
+        </form>
+    </div>
+</body>
+</html>

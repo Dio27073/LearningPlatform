@@ -3,8 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <title>StudyApp Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #202020;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #303030;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        .header, .widgets {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header a, .widgets button {
+            background-color: #00b4d8;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 5px;
+        }
+        .header a:hover, .widgets button:hover {
+            background-color: #0096c7;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        .login-register {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+            padding: 20px;
+            background-color: #404040;
+            border-radius: 10px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Welcome to our Learning Platform</h1>
+    <div class="header container">
+        <h1>StudyApp</h1>
+        <div class="nav-buttons">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="widgets container">
+        <div class="study-tools">
+            <button onclick="window.location.href='{{ url_for('create_flashcard_set') }}'">Create Flashcards</button>
+        </div>
+    </div>
+    <div class="flashcard-sets container">
+        <h2>Recent Flashcard Sets</h2>
+        <ul>
+            {% for set in flashcard_sets %}
+            <li>
+                <a href="{{ url_for('flashcard_set', set_id=set.id) }}">{{ set.title }}</a> - {{ set.description }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
