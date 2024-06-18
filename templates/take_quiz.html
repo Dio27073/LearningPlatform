@@ -61,7 +61,7 @@
 
 <body>
     <div class="container">
-        <h1>Take Quiz: {{ quiz.title }}</h1>
+        <h1>Quiz: {{ quiz.title }}</h1>
 
         <form method="POST" action="{{ url_for('submit_quiz', quiz_id=quiz.id) }}">
             {% for flashcard in flashcards %}

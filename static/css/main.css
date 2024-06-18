@@ -1,0 +1,167 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #202020;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background-color: #303030;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin-top: 20px;
+}
+
+.header, .widgets {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header a, .widgets button, .back-button, .create-quiz-button, .list-quizzes-button, .delete-button, button {
+    background-color: #00b4d8;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 5px;
+    cursor: pointer;
+}
+
+/* hover */
+.header a:hover, .widgets button:hover, .back-button:hover, .create-quiz-button:hover, .list-quizzes-button:hover, .delete-button:hover, button:hover {
+    background-color: #0096c7;
+}
+
+.delete-button {
+    background-color: #d9534f;
+}
+
+.delete-button:hover {
+    background-color: #c9302c;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, textarea, select, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* login and register form container */
+.login-register {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    padding: 20px;
+    background-color: #404040;
+    border-radius: 10px;
+}
+
+/* flashcard set container  */
+.flashcard-set {
+    width: 100%;
+}
+
+/* flashcard styling */
+.flashcard {
+    padding: 15px;
+    border-bottom: 1px solid #404040;
+    display: flex;
+    justify-content: space-between;
+}
+
+.flashcard:last-child {
+    border-bottom: none;
+}
+
+/* header and title for flashcard set */
+.header {
+    background-color: #404040;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+}
+
+.title {
+    background-color: #505050;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* labels for flashcards */
+.labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #404040;
+    font-weight: bold;
+}
+
+.term, .definition {
+    width: 45%;
+}
+
+.question-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.question-text {
+    display: inline;
+    font-weight: normal;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.option input[type="radio"] {
+    margin-right: 10px;
+}
+
+.quiz-list {
+    width: 100%;
+}
+
+.quiz {
+    padding: 15px;
+    border-bottom: 1px solid #404040;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quiz:last-child {
+    border-bottom: none;
+}
+
+.quiz a {
+    color: #00b4d8;
+    text-decoration: none;
+}
+
+.quiz a:hover {
+    text-decoration: underline;
+}

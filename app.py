@@ -59,11 +59,11 @@ def register():
         email = request.form['email']
         password = request.form['password']
         roleId = request.form['role']
-        encoded_pass = bcrypt.generate_password_hash(password).decode('utf-8')
-        user = User(username=username, email=email, password=encoded_pass, role_id=roleId)
+        hashed_pass = bcrypt.generate_password_hash(password).decode('utf-8')
+        user = User(username=username, email=email, password=hashed_pass, role_id=roleId)
         db.session.add(user)
         db.session.commit()
-        flash('Your account has been created', 'success')
+        flash('your account has been created', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html', roles=roles)  # pass roles
@@ -151,7 +151,7 @@ def create_quiz(set_id):
 
         db.session.add(quiz)
         db.session.commit()
-        flash('Quiz created successfully!', 'success')
+        flash('quiz created successfully', 'success')
         return redirect(url_for('take_quiz', quiz_id=quiz.id))
 
     return render_template('create_quiz.html', flashcard_set=flashcard_set, flashcards=flashcards)
@@ -164,11 +164,11 @@ def take_quiz(quiz_id):
     flashcard_set = FlashcardSet.query.get_or_404(quiz.set_id)
     flashcards = Flashcard.query.filter_by(set_id=flashcard_set.id).all()
 
-    # Generate multiple-choice options
+    # generate multiple-choice options
     for flashcard in flashcards:
         options = [flashcard.answer]
         other_flashcards = [f for f in flashcards if f.id != flashcard.id]
-        options.extend([f.answer for f in other_flashcards[:3]])  # Add up to 3 other options
+        options.extend([f.answer for f in other_flashcards[:3]])
         random.shuffle(options)
         flashcard.options = options
 
@@ -190,7 +190,7 @@ def submit_quiz(quiz_id):
         if user_answer and flashcard.answer.lower() == user_answer.lower():
             correct_answers += 1
 
-    flash(f'You answered {correct_answers} out of {len(flashcards)} questions correctly!', 'success')
+    flash(f'you answered {correct_answers} out of {len(flashcards)} questions correctly!', 'success')
     return redirect(url_for('quizzes'))
 
 
@@ -201,11 +201,11 @@ def delete_quiz(quiz_id):
     user = User.query.get_or_404(current_user.id)
 
     if quiz.created_by != current_user.id and user.role.name != 'admin':
-        abort(403, description="You are not authorized to delete this quiz.")
+        abort(403, description="you are not able to delete this quiz")
 
     db.session.delete(quiz)
     db.session.commit()
-    flash('Quiz deleted successfully!', 'success')
+    flash('quiz deleted', 'success')
     return redirect(url_for('quizzes'))
 
 
