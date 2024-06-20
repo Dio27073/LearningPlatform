@@ -1,12 +1,11 @@
 import random
-
 from flask import Flask, render_template, redirect, url_for, flash, request, abort
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from multiprocessing import Pool
 
-from models import db, User, Role, FlashcardSet, Flashcard, Quiz
-
+from models import db, User, Role, FlashcardSet, Flashcard, Quiz, Grade
 
 # SQL Setup
 app = Flask(__name__)
@@ -14,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://learningapp_user
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'secret'
 
+# db extensions
 db.init_app(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
@@ -55,11 +55,16 @@ def register():
     roles = Role.query.all()  # get roles
 
     if request.method == 'POST':
+        # get form data
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
         roleId = request.form['role']
+
+        # hashed password
         hashed_pass = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # creates a new user
         user = User(username=username, email=email, password=hashed_pass, role_id=roleId)
         db.session.add(user)
         db.session.commit()
@@ -75,6 +80,7 @@ def logout():
     return redirect(url_for('home'))
 
 
+# list of quizzes
 @app.route('/quizzes')
 @login_required
 def quizzes():
@@ -82,22 +88,27 @@ def quizzes():
     return render_template('quizzes.html', quizzes=quizzes)
 
 
+# flashcard set
 @app.route('/flashcard_set/<int:set_id>')
 @login_required
 def flashcard_set(set_id):
-    flashcard_set = FlashcardSet.query.get_or_404(set_id)
-    flashcards = Flashcard.query.filter_by(set_id=set_id).all()
+    flashcard_set = FlashcardSet.query.get_or_404(set_id)        # get flashcard set by ID
+    flashcards = Flashcard.query.filter_by(set_id=set_id).all()  # get all flashcards in a set
     return render_template('flashcard_set.html', flashcard_set=flashcard_set, flashcards=flashcards)
 
 
+# create a flashcard set
 @app.route('/create_flashcard_set', methods=['GET', 'POST'])
 @login_required
 def create_flashcard_set():
     if request.method == 'POST':
+        # get form data
         title = request.form['title']
         description = request.form['description']
 
         flashcard_set = FlashcardSet(title=title, description=description, created_by=current_user.id)
+
+        # add and commit the new flashcard set to the database
         db.session.add(flashcard_set)
         db.session.commit()
 
@@ -114,6 +125,7 @@ def create_flashcard_set():
     return render_template('create_flashcards.html')
 
 
+# delete set
 @app.route('/delete_flashcard_set/<int:set_id>', methods=['POST'])
 @login_required
 def delete_flashcard_set(set_id):
@@ -131,10 +143,11 @@ def delete_flashcard_set(set_id):
 
     db.session.delete(flashcard_set)
     db.session.commit()
-    flash('Flashcard set deleted successfully!', 'success')
+    flash('flashcard set deleted', 'success')
     return redirect(url_for('home'))
 
 
+# create a quiz
 @app.route('/create_quiz/<int:set_id>', methods=['GET', 'POST'])
 @login_required
 def create_quiz(set_id):
@@ -175,23 +188,42 @@ def take_quiz(quiz_id):
     return render_template('take_quiz.html', quiz=quiz, flashcard_set=flashcard_set, flashcards=flashcards)
 
 
+# function to check quiz answers
+def check_answer(args):
+    correct_answer, user_answer = args
+    return correct_answer.lower() == user_answer.lower()
+
+
 @app.route('/submit_quiz/<int:quiz_id>', methods=['POST'])
 @login_required
 def submit_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     flashcards = Flashcard.query.filter_by(set_id=quiz.set_id).all()
-    user_answers = request.form.getlist('answers[]')
+    user_answers = request.form.to_dict(flat=False)
 
-    correct_answers = 0
+    # argument for parallel process
+    args = [(flashcard.answer, user_answers.get(f'answers[{flashcard.id}]', [''])[0]) for flashcard in flashcards]
 
-    # logic to check the quiz
-    for flashcard in flashcards:
-        user_answer = request.form.get(f'answers[{flashcard.id}]')
-        if user_answer and flashcard.answer.lower() == user_answer.lower():
-            correct_answers += 1
+    # multiprocessing to check answers
+    with Pool(processes=4) as pool:
+        results = pool.map(check_answer, args)
 
-    flash(f'you answered {correct_answers} out of {len(flashcards)} questions correctly!', 'success')
-    return redirect(url_for('quizzes'))
+    correct_answers = sum(results)
+    total_questions = len(flashcards)
+    totalScore = (correct_answers / total_questions) * 100  # calculate score
+
+    # save grade
+    grade = Grade(
+        title=quiz.title,
+        user_id=current_user.id,
+        score=totalScore,
+        quiz_id=quiz.id
+    )
+    db.session.add(grade)
+    db.session.commit()
+
+    return render_template('quiz_result.html', quiz=quiz,
+                           correct_answers=correct_answers, total_questions=total_questions)
 
 
 @app.route('/delete_quiz/<int:quiz_id>', methods=['POST'])
@@ -200,13 +232,21 @@ def delete_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     user = User.query.get_or_404(current_user.id)
 
-    if quiz.created_by != current_user.id and user.role.name != 'admin':
+    # only the user who created the quiz an admin or an instructor can delete a quiz
+    if quiz.created_by != current_user.id and user.role.name not in ['admin', 'instructor']:
         abort(403, description="you are not able to delete this quiz")
 
     db.session.delete(quiz)
     db.session.commit()
     flash('quiz deleted', 'success')
     return redirect(url_for('quizzes'))
+
+
+@app.route('/gradebook', methods=['GET', 'POST'])
+@login_required
+def gradebook():
+    grades = Grade.query.filter_by(user_id=current_user.id).all()
+    return render_template('gradebook.html', grades=grades, user=current_user)
 
 
 if __name__ == '__main__':

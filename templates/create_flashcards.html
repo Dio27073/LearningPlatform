@@ -9,16 +9,23 @@
 <body>
     <div class="container">
         <h1>Create a New Study Set</h1>
+
+        <!-- form for new study set -->
         <form method="POST">
+            <!-- form group for title -->
             <div class="form-group">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required>
             </div>
+
+            <!-- form group for description -->
             <div class="form-group">
                 <label for="description">Description:</label>
                 <textarea id="description" name="description"></textarea>
             </div>
+
             <h2>Add Flashcards</h2>
+            <!-- container for flashcards -->
             <div id="flashcards">
                 <div class="flashcard form-group">
                     <label for="question">Term:</label>
@@ -27,8 +34,10 @@
                     <input type="text" id="answer" name="answers[]" required>
                 </div>
             </div>
-            <button type="button" id="add-flashcard">Add Another Flashcard</button>
-            <button type="submit">Create Set and Flashcards</button>
+
+            <!-- button to add a new flashcard and to submit the form -->
+            <button type="button" id="add-flashcard">Add Flashcard</button>
+            <button type="submit">Create Set</button>
         </form>
     </div>
 
@@ -38,15 +47,27 @@
             var flashcardsContainer = document.getElementById('flashcards');
             var newFlashcard = document.createElement('div');
             newFlashcard.classList.add('flashcard', 'form-group');
+            var flashcardIndex = document.getElementsByClassName('flashcard').length;
+
 
             newFlashcard.innerHTML = `
-                <label for="question">Term:</label>
-                <input type="text" name="questions[]" required>
-                <label for="answer">Definition:</label>
-                <input type="text" name="answers[]" required>
+                <label for="question${flashcardIndex}">Term:</label>
+                <input type="text" id="question${flashcardIndex}" name="questions[]" required>
+                <label for="answer${flashcardIndex}">Definition:</label>
+                <input type="text" id="answer${flashcardIndex}" name="answers[]" required>
+                <button type="button" class="remove-flashcard">Remove</button>
             `;
 
+            // append new flashcard to the flashcards container
             flashcardsContainer.appendChild(newFlashcard);
+
+
+            var removeButtons = document.getElementsByClassName('remove-flashcard');
+            Array.from(removeButtons).forEach(button => {
+                button.onclick = function() {
+                    this.parentElement.remove();
+                }
+            });
         });
     </script>
 </body>

@@ -18,11 +18,15 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- display create flashcard set -->
     <div class="widgets container">
         <div class="study-tools">
             <button onclick="window.location.href='{{ url_for('create_flashcard_set') }}'">Create Flashcards</button>
         </div>
     </div>
+
+    <!-- show recently made flash card sets -->
     <div class="flashcard-sets container">
         <h2>Recent Flashcard Sets</h2>
         <ul>
@@ -33,5 +37,6 @@
             {% endfor %}
         </ul>
     </div>
+
 </body>
 </html>

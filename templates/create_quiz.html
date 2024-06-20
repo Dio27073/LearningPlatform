@@ -14,10 +14,12 @@
                 <label for="title">Quiz Title:</label>
                 <input type="text" id="title" name="title" required>
             </div>
+
             <div class="form-group">
                 <label for="length">Length of Practice Test:</label>
                 <input type="number" id="length" name="length" min="1" max="{{ flashcards|length }}" value="4" required>
             </div>
+
             <div class="form-group">
                 <label for="question_format">Question Format:</label>
                 <select id="question_format" name="question_format" required>

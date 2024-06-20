@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ flashcard_set.title }}</title>
+    <title>Grades for {{ user.username }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,18 +22,6 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             margin-top: 20px;
-        }
-        .flashcard-set {
-            width: 100%;
-        }
-        .flashcard {
-            padding: 15px;
-            border-bottom: 1px solid #404040;
-            display: flex;
-            justify-content: space-between;
-        }
-        .flashcard:last-child {
-            border-bottom: none;
         }
         .header {
             background-color: #404040;
@@ -55,10 +43,17 @@
             background-color: #404040;
             font-weight: bold;
         }
-        .term, .definition {
-            width: 45%;
+        .flashcard {
+            padding: 15px;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .back-button, .create-quiz-button, .list-quizzes-button, .delete-button {
+        .flashcard:last-child {
+            border-bottom: none;
+        }
+        .back-button {
             background-color: #00b4d8;
             color: #fff;
             padding: 10px 20px;
@@ -68,52 +63,35 @@
             display: inline-block;
             margin-right: 10px;
         }
-        .delete-button {
-            background-color: #d9534f;
-            margin-left: 10px;
-        }
-        .back-button:hover, .create-quiz-button:hover, .list-quizzes-button:hover, .delete-button:hover {
+        .back-button:hover {
             background-color: #0096c7;
-        }
-        .delete-button:hover {
-            background-color: #c9302c;
         }
     </style>
 </head>
 
 <body>
-    <div class="container flashcard-set">
+    <div class="container">
         <div class="header">
-            <h1>{{ flashcard_set.title }}</h1>
-            <p>{{ flashcard_set.description }}</p>
+            <h1>Grades for {{ user.username }}</h1>
         </div>
 
         <div class="title">
             <div class="labels">
-                <div class="term">Term</div>
-                <div class="definition">Definition</div>
+                <div class="term">Quiz</div>
+                <div class="definition">Grade</div>
             </div>
         </div>
 
         <div>
-            {% for flashcard in flashcards %}
+            {% for grade in grades %}
             <div class="flashcard">
-                <div class="term">{{ flashcard.question }}</div>
-                <div class="definition">{{ flashcard.answer }}</div>
+                <div class="term">{{ grade.quiz.title }}</div>
+                <div class="definition">{{ grade.score }}</div>
             </div>
             {% endfor %}
         </div>
 
         <a href="{{ url_for('home') }}" class="back-button">Back to Home</a>
-        <a href="{{ url_for('create_quiz', set_id=flashcard_set.id) }}" class="create-quiz-button">Create Quiz</a>
-        <a href="{{ url_for('quizzes') }}" class="list-quizzes-button">List of Quizzes</a>
-
-        {% if current_user.role.name == 'admin' %}
-        <form method="POST" action="{{ url_for('delete_flashcard_set', set_id=flashcard_set.id) }}" style="display:inline;">
-            <button type="submit" class="delete-button">Delete Flashcard Set</button>
-        </form>
-        {% endif %}
-
     </div>
 </body>
 </html>

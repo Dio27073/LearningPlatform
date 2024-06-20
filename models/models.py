@@ -4,9 +4,11 @@ from . import db
 
 bcrypt = Bcrypt()
 
+
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,12 +24,14 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
 
+
 class FlashcardSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.String(300), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     flashcards = db.relationship('Flashcard', backref='set', lazy=True, cascade="all, delete-orphan")
+
 
 class Flashcard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,6 +40,7 @@ class Flashcard(db.Model):
     set_id = db.Column(db.Integer, db.ForeignKey('flashcard_set.id'), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
@@ -43,3 +48,13 @@ class Quiz(db.Model):
     set_id = db.Column(db.Integer, db.ForeignKey('flashcard_set.id'), nullable=False)
     question_format = db.Column(db.String(50), nullable=False)
     length = db.Column(db.Integer, nullable=False)
+
+
+class Grade(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    score = db.Column(db.Float, nullable=False)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('grades', lazy=True))
+    quiz = db.relationship('Quiz', backref=db.backref('grades', lazy=True))
