@@ -80,6 +80,29 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route('/users')
+@login_required
+def list_users():
+    if current_user.role.name != 'admin':
+        abort(403, description="You are not an admin")
+    users = User.query.all()
+    return render_template('users.html', users=users)
+
+
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+
+    if current_user.role.name != 'admin':
+        abort(403, description="denied")
+
+    db.session.delete(user)
+    db.session.commit()
+    flash('user deleted', 'success')
+    return redirect(url_for('list_users'))
+
+
 # list of quizzes
 @app.route('/quizzes')
 @login_required
